@@ -798,4 +798,65 @@ export class ProcessImporter {
 
         logger.logInfo("Process import completed successfully.");
     }
+
+    public async updateProcess(payload: IProcessPayload): Promise<void> {
+        logger.logInfo("Process update started.");
+
+        try {
+            if (this._config.targetProcessName) {
+                payload.process.name = this._config.targetProcessName;
+            }
+
+            await Engine.Task(() => this._preUpdateValidation(payload), "Pre-update validation on target account");
+            await Engine.Task(() => this._createComponents(payload), "Update artifacts on target process");
+        }
+        catch (error) {
+            if (error instanceof ValidationError) {
+                logger.logError("Pre-update validation failed. No artifacts were updated on target process")
+            }
+            throw error;
+        }
+
+        logger.logInfo("Process update completed successfully.");
+    }
+
+    private async _preUpdateValidation(payload: IProcessPayload): Promise<void> {
+        payload.targetAccountInformation = {
+            fieldRefNameToPicklistId: {}
+        }; // set initial value for target account information
+
+        await Engine.Task(() => this._validateProcessExists(payload), "Validate process exists on target account");
+        await Engine.Task(() => this._validateFields(payload), "Validate fields on target account");
+        await Engine.Task(() => this._validatePicklists(payload), "Validate picklists on target account");
+    }
+
+    private async _validateProcessExists(payload: IProcessPayload): Promise<void> {
+        if (payload.process.properties.class != WITProcessInterfaces.ProcessClass.Derived) {
+            throw new ValidationError("Only inherited process is supported to be updated.");
+        }
+
+        const targetProcesses: WITProcessInterfaces.ProcessModel[] =
+            await Utility.tryCatchWithKnownError(async () => {
+                return await Engine.Task(() => this._witProcessApi.getProcesses(), `Get processes on target account`);
+            }, () => new ValidationError("Failed to get processes on target account, check account url, token and token permission."));
+
+        if (!targetProcesses) { // most likely 404
+            throw new ValidationError("Failed to get processes on target account, check account url.");
+        }
+
+        let targetProcess: WITProcessInterfaces.ProcessModel = null;
+        for (const process of targetProcesses) {
+            if (payload.process.name.toLowerCase() === process.name.toLowerCase()) {
+                targetProcess = process;
+                break;
+            }
+        }
+
+        if (!targetProcess) {
+            throw new ValidationError("Process with the specified name does not exist on target account. Use 'import' mode to create a new process.");
+        }
+
+        // Update the payload with the existing process ID so components can be updated correctly
+        payload.process.typeId = targetProcess.typeId;
+    }
 }

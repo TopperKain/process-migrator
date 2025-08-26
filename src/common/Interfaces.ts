@@ -15,7 +15,8 @@ export enum LogLevel {
 export enum Modes {
     import,
     export,
-    migrate
+    migrate,
+    update
 }
 
 export interface IExportOptions {
