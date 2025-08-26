@@ -1,0 +1,4 @@
+[INFORMATION] [2025-08-26T19:59:04.434Z] Full log is sent to '/home/runner/work/process-migrator/process-migrator/output\processMigrator.log' 
+[VERBOSE] [2025-08-26T19:59:04.436Z] Keyboard listener added
+[VERBOSE] [2025-08-26T19:59:04.436Z] Begin step 'Get rest client on source account 'https://dev.azure.com/test''.
+[ERROR] [2025-08-26T19:59:04.452Z] Failed to connect to account 'https://dev.azure.com/test' using personal access token '<omitted>' provided, check url and token.
