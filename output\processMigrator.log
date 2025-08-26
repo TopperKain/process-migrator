@@ -1,0 +1,6 @@
+[INFORMATION] [2025-08-26T20:00:23.935Z] Full log is sent to '/home/runner/work/process-migrator/process-migrator/output\processMigrator.log' 
+[VERBOSE] [2025-08-26T20:00:23.937Z] Keyboard listener added
+[VERBOSE] [2025-08-26T20:00:23.937Z] Start read process payload from '/tmp/test-update/test-process.json'.
+[VERBOSE] [2025-08-26T20:00:23.937Z] Complete read process payload.
+[VERBOSE] [2025-08-26T20:00:23.937Z] Begin step 'Get rest client on target account 'https://test.visualstudio.com''.
+[ERROR] [2025-08-26T20:00:23.954Z] Failed to connect to account 'https://test.visualstudio.com' using personal access token '<omitted>' provided, check url and token.

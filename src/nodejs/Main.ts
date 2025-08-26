@@ -70,6 +70,21 @@ async function main() {
             const importer: ProcessImporter = new ProcessImporter(targetRestClients, configuration, commandLineOptions);
             await importer.importProcess(processPayload);
         }
+
+        // Update
+        if (mode === Modes.update) {
+            const processFileName = (configuration.options && configuration.options.processFilename) || normalize(defaultProcessFilename);
+            if (!existsSync(processFileName)) {
+                throw new ImportError(`Process payload file '${processFileName}' does not exist.`)
+            }
+            logger.logVerbose(`Start read process payload from '${processFileName}'.`);
+            processPayload = JSON.parse(readFileSync(processFileName, defaultEncoding));
+            logger.logVerbose(`Complete read process payload.`);
+
+            const targetRestClients = await Engine.Task(() => NodeJsUtility.getRestClients(configuration.targetAccountUrl, configuration.targetAccountToken), `Get rest client on target account '${configuration.targetAccountUrl}'`);
+            const importer: ProcessImporter = new ProcessImporter(targetRestClients, configuration, commandLineOptions);
+            await importer.updateProcess(processPayload);
+        }
     }
     catch (error) {
         if (error instanceof KnownError) {

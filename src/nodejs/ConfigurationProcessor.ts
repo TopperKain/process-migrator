@@ -22,7 +22,7 @@ export function ProcesCommandLine(): ICommandLineOptions {
     const parsedArgs = minimist(process.argv, parseOptions);
 
     if (parsedArgs["h"]) {
-        logger.logInfo(`Usage: process-migrator [--mode=<migrate(default)/import/export> [--config=<your-configuration-file-path>]`);
+        logger.logInfo(`Usage: process-migrator [--mode=<migrate(default)/import/export/update> [--config=<your-configuration-file-path>]`);
         process.exit(0);
     }
 
@@ -35,7 +35,8 @@ export function ProcesCommandLine(): ICommandLineOptions {
             case Modes[Modes.export]: mode = Modes.export; break;
             case Modes[Modes.import]: mode = Modes.import; break;
             case Modes[Modes.migrate]: mode = Modes.migrate; break;
-            default: logger.logError(`Invalid mode argument, allowed values are 'import', 'export' or 'migrate'.`); process.exit(1);
+            case Modes[Modes.update]: mode = Modes.update; break;
+            default: logger.logError(`Invalid mode argument, allowed values are 'import', 'export', 'migrate' or 'update'.`); process.exit(1);
         }
     } else {
         mode = Modes.migrate;
